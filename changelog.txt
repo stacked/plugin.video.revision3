@@ -1,6 +1,7 @@
 [B]Version 1.0.2[/B]
 
 - Updated icon
+- Changed video info labels
 
 [B]Version 1.0.1[/B]
 
