@@ -1,3 +1,11 @@
+[B]Version 1.0.2[/B]
+
+- Updated icon
+
+[B]Version 1.0.1[/B]
+
+- Added Hungarian translation
+
 [B]Version 1.0.0[/B]
 
 - Converted plugin to the new add-on system
