@@ -1,3 +1,12 @@
+[B]Version 2.0.0[/B]
+
+- Initial commit to Eden add-on system
+- Scaping content from Revision3.com instead of RSS feeds
+- Added option to download videos
+- Added directory for recently released, archived shows, and search
+- Added sort methods for date, episode number, show, and duration
+- Other minor changes
+
 [B]Version 1.0.6[/B]
 
 - Updated Video formats
