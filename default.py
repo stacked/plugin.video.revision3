@@ -4,7 +4,7 @@ import xbmc, xbmcgui, xbmcplugin, urllib2, urllib, re, string, sys, os, tracebac
 plugin =  'Revision3'
 __author__ = 'stacked <stacked.xbmc@gmail.com>'
 __url__ = 'http://code.google.com/p/plugin/'
-__date__ = '01-02-2012'
+__date__ = '01-30-2012'
 __version__ = '2.0.1'
 settings = xbmcaddon.Addon(id='plugin.video.revision3')
 dbg = False
@@ -17,11 +17,11 @@ current_thumb = os.path.join( settings.getAddonInfo( 'path' ), 'resources', 'med
 search_thumb = os.path.join( settings.getAddonInfo( 'path' ), 'resources', 'media', 'search.png' )
 
 import CommonFunctions
-common = CommonFunctions.CommonFunctions()
-common.plugin = plugin
+common = CommonFunctions
+common.plugin = plugin + ' ' + __version__
 
-import SimpleDownloader as downloader
-downloader = downloader.SimpleDownloader()
+#import SimpleDownloader as downloader
+#downloader = downloader.SimpleDownloader()
 
 def open_url(url):
 	req = urllib2.Request(url)
@@ -68,6 +68,7 @@ def build_main_directory(url):
 def build_sub_directory(url, name):
 	saveurl = url
 	studio = name
+	savestudio = name
 	#html = common.fetchPage({"link": url})['content']
 	html = open_url(url)
 	ret = common.parseDOM(html, "div", attrs = { "id": "main-episodes" })
@@ -142,7 +143,7 @@ def build_sub_directory(url, name):
 	if next == True:
 		listitem = xbmcgui.ListItem( label = 'Next Page (' + str( int(current[0]) + 1 ) + ')' , iconImage = next_thumb, thumbnailImage = next_thumb )
 		listitem.setProperty('fanart_image',fanart)
-		u = sys.argv[0] + "?mode=1&name=" + urllib.quote_plus(studio) + "&url=" + urllib.quote_plus(saveurl)
+		u = sys.argv[0] + "?mode=1&name=" + urllib.quote_plus(savestudio) + "&url=" + urllib.quote_plus(saveurl)
 		ok = xbmcplugin.addDirectoryItem(handle = int(sys.argv[1]), url = u, listitem = listitem, isFolder = True)	
 	xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_UNSORTED )
 	xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_DATE )
@@ -199,6 +200,12 @@ def clean(name):
 	for trash, crap in remove:
 		name = name.replace(trash,crap)
 	return name
+	
+def clean_file(name):
+    remove=[('\"',''),('\\',''),('/',''),(':',' - '),('|',''),('>',''),('<',''),('?',''),('*','')]
+    for old, new in remove:
+        name=name.replace(old,new)
+    return name
 
 def get_video(url, name, plot, studio, episode, thumb):
 	#result = common.fetchPage({"link": url})['content']
@@ -227,8 +234,12 @@ def get_video(url, name, plot, studio, episode, thumb):
 		purl = durl[dictList[ret]]
 	if ret != -1:
 		if settings.getSetting('download') == 'true':
-			params = { "videoid": str(episode), "video_url": purl, "Title": name }
-			downloader.downloadVideo(params)
+			while not settings.getSetting('downloadPath'):
+				dialog = xbmcgui.Dialog()
+				ok = dialog.ok(plugin, settings.getLocalizedString( 30011 ))
+				settings.openSettings()
+			params = { "url": purl, "download_path": settings.getSetting('downloadPath'), "Title": name }
+			downloader.download(clean_file(name) + '.' + purl.split('/')[-1].split('.')[-1], params)
 		else:
 			#thumb = xbmc.getInfoImage( 'ListItem.Thumb' )
 			listitem = xbmcgui.ListItem(label = name , iconImage = 'DefaultVideo.png', thumbnailImage = thumb)

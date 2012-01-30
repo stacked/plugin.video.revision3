@@ -1,6 +1,8 @@
 [B]Version 2.0.1[/B]
 
-- Added missing files
+- Fixed error on start up
+- Disabled simple downloader dependency until 1.0 is released
+- Fixed fanart bug in "Recently Released"
 
 [B]Version 2.0.0[/B]
 
