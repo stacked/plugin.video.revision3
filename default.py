@@ -5,7 +5,7 @@ plugin =  'Revision3'
 __author__ = 'stacked <stacked.xbmc@gmail.com>'
 __url__ = 'http://code.google.com/p/plugin/'
 __date__ = '02-01-2012'
-__version__ = '2.0.1'
+__version__ = '2.0.2'
 settings = xbmcaddon.Addon(id='plugin.video.revision3')
 dbg = False
 dbglevel = 3

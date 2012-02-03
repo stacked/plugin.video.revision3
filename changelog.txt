@@ -1,4 +1,4 @@
-[B]Version 2.0.1[/B]
+[B]Version 2.0.2[/B]
 
 - Fixed error on start up
 - Disabled Simple Downloader dependency until it's stable
