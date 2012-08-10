@@ -1,12 +1,13 @@
 
-import xbmc, xbmcgui, xbmcplugin, urllib2, urllib, re, string, sys, os, traceback, xbmcaddon, xbmcvfs
+import xbmc, xbmcgui, xbmcplugin, urllib2, urllib, re, string, sys, os, traceback, xbmcaddon, xbmcvfs, buggalo
 
 plugin =  'Revision3'
 __author__ = 'stacked <stacked.xbmc@gmail.com>'
 __url__ = 'http://code.google.com/p/plugin/'
-__date__ = '07-27-2012'
-__version__ = '2.0.4'
+__date__ = '08-05-2012'
+__version__ = '2.0.5'
 settings = xbmcaddon.Addon(id='plugin.video.revision3')
+buggalo.SUBMIT_URL = 'http://www.xbmc.byethost17.com/submit.php'
 dbg = False
 dbglevel = 3
 next_thumb = os.path.join( settings.getAddonInfo( 'path' ), 'resources', 'media', 'next.png' )
@@ -23,17 +24,9 @@ common.plugin = plugin + ' ' + __version__
 import SimpleDownloader as downloader
 downloader = downloader.SimpleDownloader()
 
-def open_url(url):
-	req = urllib2.Request(url)
-	req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 6.1; en-GB; rv:1.9.2.8) Gecko/20100722 Firefox/3.6.8')
-	content = urllib2.urlopen(req)
-	data = content.read()
-	content.close()
-	return data
-
 def build_main_directory(url):
 	path = url
-	html = open_url(url)
+	html = common.fetchPage({"link": url})['content']
 	shows = common.parseDOM(html, "ul", attrs = { "id": "shows" })[0]
 	url_name = re.compile('<h3><a href="(.+?)">(.+?)</a></h3>').findall(shows)
 	image = re.compile('class="thumbnail"><img src="(.+?)" /></a>').findall(shows)
@@ -69,8 +62,7 @@ def build_sub_directory(url, name):
 	saveurl = url
 	studio = name
 	savestudio = name
-	#html = common.fetchPage({"link": url})['content']
-	html = open_url(url)
+	html = common.fetchPage({"link": url})['content']
 	ret = common.parseDOM(html, "div", attrs = { "id": "main-episodes" })
 	pageLoad = common.parseDOM(ret, "a", ret = "onclick")
 	if len(ret) == 0:
@@ -84,8 +76,7 @@ def build_sub_directory(url, name):
 	try:
 		img = common.parseDOM(episodes[0], "img", ret = "src")[0]
 		downloads = 'http://revision3.com/' + img.rsplit('/')[6] + '/' + img.rsplit('/')[6] + '_downloads'
-		#fresult = common.fetchPage({"link": downloads})['content']
-		fresult = open_url(downloads)
+		fresult = common.fetchPage({"link": downloads})['content']
 		data = re.compile( '<a href="(.+?)" target="_blank">1920x1200</a>' ).findall(fresult)
 		if len(data) > 1:
 			fanart = data[1]
@@ -138,6 +129,7 @@ def build_sub_directory(url, name):
 		listitem = xbmcgui.ListItem(label = plot, iconImage = thumb, thumbnailImage = thumb)
 		listitem.setProperty('fanart_image',fanart)
 		listitem.setInfo( type = "Video", infoLabels = { "Title": plot, "Director": plugin, "Studio": studio, "Plot": plot, "Episode": int(episode), "Date": date, "Duration": duration } )
+		listitem.setProperty('IsPlayable', 'true')
 		u = sys.argv[0] + "?mode=2&name=" + urllib.quote_plus(plot) + "&url=" + urllib.quote_plus(url) + "&plot=" + urllib.quote_plus(plot) + "&studio=" + urllib.quote_plus(studio) + "&episode=" + urllib.quote_plus(episode) + "&thumb=" + urllib.quote_plus(thumb)
 		ok = xbmcplugin.addDirectoryItem(handle = int(sys.argv[1]), url = u, listitem = listitem, isFolder = False)
 	if next == True:
@@ -156,7 +148,7 @@ def build_search_directory(url):
 	if url == 'search':
 		search = common.getUserInput("Enter search term", "").replace(' ','+')
 		url = 'http://revision3.com/search/page?type=video&q=' + search + '&limit=10&page=1'
-	html = open_url(url)
+	html = common.fetchPage({"link": url})['content']
 	current = common.parseDOM(html, "span", attrs = { "class": "active" })
 	pageLoad = common.parseDOM(html, "a", ret = "onclick")
 	try:
@@ -186,6 +178,7 @@ def build_search_directory(url):
 			studio = ''
 		listitem = xbmcgui.ListItem(label = title, iconImage = thumb, thumbnailImage = thumb)
 		listitem.setInfo( type = "Video", infoLabels = { "Title": title, "Director": plugin, "Studio": studio, "Plot": plot } )
+		listitem.setProperty('IsPlayable', 'true')
 		u = sys.argv[0] + "?mode=2&name=" + urllib.quote_plus(title) + "&url=" + urllib.quote_plus(url) + "&plot=" + urllib.quote_plus(plot) + "&studio=" + urllib.quote_plus(studio) + "&episode=" + urllib.quote_plus('0') + "&thumb=" + urllib.quote_plus(thumb)
 		ok = xbmcplugin.addDirectoryItem(handle = int(sys.argv[1]), url = u, listitem = listitem, isFolder = False)
 	if next == True:
@@ -208,10 +201,9 @@ def clean_file(name):
     return name
 
 def get_video(url, name, plot, studio, episode, thumb):
-	#result = common.fetchPage({"link": url})['content']
-	result = open_url(url)
+	result = common.fetchPage({"link": url})['content']
 	video_id = re.compile('player\.loadRevision3Item\(\'video_id\',(.+?)\);').findall(result)[0].replace(' ','')
-	api = open_url('http://revision3.com/api/flash?video_id=' + video_id)
+	api = common.fetchPage({"link": 'http://revision3.com/api/flash?video_id=' + video_id})['content']
 	videos_api = common.parseDOM(api, "media", ret = "type")
 	videos_api[:] = (value for value in videos_api if value != 'thumbnail')
 	durl = {}
@@ -263,10 +255,9 @@ def get_video(url, name, plot, studio, episode, thumb):
 			params = { "url": purl, "download_path": settings.getSetting('downloadPath'), "Title": name }
 			downloader.download(clean_file(name) + '.' + purl.split('/')[-1].split('.')[-1], params)
 		else:
-			#thumb = xbmc.getInfoImage( 'ListItem.Thumb' )
-			listitem = xbmcgui.ListItem(label = name , iconImage = 'DefaultVideo.png', thumbnailImage = thumb)
+			listitem = xbmcgui.ListItem(label = name , iconImage = 'DefaultVideo.png', thumbnailImage = thumb, path = purl)
 			listitem.setInfo( type = "Video", infoLabels={ "Title": name, "Director": plugin, "Studio": studio, "Plot": plot, "Episode": int(episode)  } )
-			xbmc.Player(xbmc.PLAYER_CORE_DVDPLAYER).play(purl, listitem)	
+			xbmcplugin.setResolvedUrl( handle = int( sys.argv[1] ), succeeded = True, listitem = listitem )	
 
 params = common.getParameters(sys.argv[2])
 url = None
@@ -306,14 +297,17 @@ try:
 except:
 	pass
 
-if mode == None:
-	url = 'http://revision3.com/shows/'
-	build_main_directory(url)
-elif mode == 1:
-	build_sub_directory(url, name)
-elif mode == 2:
-	get_video(url, name, plot, studio, episode, thumb)
-elif mode == 3:
-	build_main_directory(url)
-elif mode == 4:
-	build_search_directory(url)
+try:
+	if mode == None:
+		url = 'http://revision3.com/shows/'
+		build_main_directory(url)
+	elif mode == 1:
+		build_sub_directory(url, name)
+	elif mode == 2:
+		get_video(url, name, plot, studio, episode, thumb)
+	elif mode == 3:
+		build_main_directory(url)
+	elif mode == 4:
+		build_search_directory(url)
+except Exception:
+	buggalo.onExceptionRaised()
