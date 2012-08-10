@@ -1,6 +1,13 @@
+[B]Version 2.0.6[/B]
+
+- Added default view for Confluence skin
+- Fixed playlist error when download is enabled
+- Added fanart
+- Other minor changes
+
 [B]Version 2.0.5[/B]
 
-- Switched to setResolvedUrl/IsPlayable method for video playback
+- Switched from DVDPLAYER to setResolvedUrl/IsPlayable method for video playback
 - Added Buggalo Exception Collector
 - Other minor changes
 
