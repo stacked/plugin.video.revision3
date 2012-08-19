@@ -4,8 +4,8 @@ import xbmc, xbmcgui, xbmcplugin, xbmcaddon, urllib, re, string, sys, os, buggal
 plugin =  'Revision3'
 __author__ = 'stacked <stacked.xbmc@gmail.com>'
 __url__ = 'http://code.google.com/p/plugin/'
-__date__ = '08-10-2012'
-__version__ = '2.0.6'
+__date__ = '08-19-2012'
+__version__ = '2.0.7'
 settings = xbmcaddon.Addon(id='plugin.video.revision3')
 buggalo.SUBMIT_URL = 'http://www.xbmc.byethost17.com/submit.php'
 dbg = False
@@ -117,7 +117,7 @@ def build_sub_directory(url, name):
 		childshow = common.parseDOM(child, "a", attrs = { "class": "thumbnail" }, ret = "href" )[0].rsplit('/')[1]
 		csaveurl = 'http://revision3.com/' + childshow + '/episodePage?type=recent&limit=15&hideShow=1&hideArrows=1&page=1'
 		infoLabels = { "Title": label, "Plot": label }
-		ListItem('[ ' + label + ' ]', more_thumb, csaveurl, '1', True, infoLabels, fanart)
+		ListItem('[ ' + label + ' ]', more_thumb, csaveurl, '1', True, infoLabels, fanart, studio)
 	except:
 		pass
 	try:
@@ -153,7 +153,7 @@ def build_sub_directory(url, name):
 			episode = '0'
 			date = '0000-00-00'
 		duration = name[-6:].rstrip(')').replace('(','')
-		infoLabels = { "Title": plot, "Director": plugin, "Studio": studio, "Plot": plot, "Episode": int(episode), "Aired": date, "Duration": duration }
+		infoLabels = { "Title": plot, "Studio": studio, "Plot": plot, "Episode": int(episode), "Aired": date, "Duration": duration }
 		ListItem(plot, thumb, url, '2', False, infoLabels, fanart)
 	if next == True:
 		infoLabels = { "Title": settings.getLocalizedString( 30016 ), "Plot": settings.getLocalizedString( 30016 ) }
@@ -200,8 +200,8 @@ def build_search_directory(url):
 		try:
 			studio = title.rsplit(' - ')[1]
 		except:
-			studio = ''
-		infoLabels = { "Title": title, "Director": plugin, "Studio": studio, "Plot": plot, "Episode": 0, "Aired": "0000-00-00" }
+			studio = plugin
+		infoLabels = { "Title": title, "Studio": studio, "Plot": plot, "Episode": 0, "Aired": "0000-00-00" }
 		ListItem(title, thumb, url, '2', False, infoLabels, fanart_bg)
 	if next == True:
 		infoLabels = { "Title": settings.getLocalizedString( 30016 ), "Plot": settings.getLocalizedString( 30016 ) }
@@ -283,7 +283,7 @@ def get_video(url, name, plot, studio, episode, thumb, date):
 			downloader.download(clean_file(name) + '.' + purl.split('/')[-1].split('.')[-1], params)
 		else:
 			listitem = xbmcgui.ListItem(label = name , iconImage = 'DefaultVideo.png', thumbnailImage = thumb, path = purl)
-			listitem.setInfo( type = "Video", infoLabels={ "Title": name, "Director": plugin, "Studio": studio, "Plot": plot, "Episode": int(episode), "Aired": date  } )
+			listitem.setInfo( type = "Video", infoLabels={ "Title": name, "Studio": studio, "Plot": plot, "Episode": int(episode), "Aired": date  } )
 			xbmcplugin.setResolvedUrl( handle = int( sys.argv[1] ), succeeded = True, listitem = listitem )	
 
 params = common.getParameters(sys.argv[2])
