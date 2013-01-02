@@ -110,7 +110,7 @@ def build_sub_directory(url, name):
 		pass
 	try:
 		strs = 'http://revision3.com' + pageLoad[-1:][0].rsplit('\'')[1]
-		params = common.getParameters(strs)
+		params = getParameters(strs)
 		saveurl = strs.rstrip('&page=' + params['page']) + '&page=' + str( int(current[0]) + 1 )
 		if int(params['page']) > int(current[0]):
 			next = True
@@ -234,7 +234,7 @@ def build_search_directory(url):
 	pageLoad = common.parseDOM(html, "a", ret = "onclick")
 	try:
 		strs = 'http://revision3.com' + pageLoad[-1:][0].rsplit('\'')[1]
-		params = common.getParameters(strs)
+		params = getParameters(strs)
 		saveurl = strs.rstrip('&page=' + params['page']) + '&page=' + str( int(current[0]) + 1 )
 		if int(params['page']) > int(current[0]):
 			next = True
