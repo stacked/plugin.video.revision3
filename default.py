@@ -120,7 +120,8 @@ def build_sub_directory(url, name, slug, offset):
 	xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_VIDEO_RUNTIME )
 	setViewMode("503")
 	xbmcplugin.endOfDirectory(int(sys.argv[1]))
-	
+
+@retry((IndexError, TypeError))	
 def build_networks_directory():
 	html = getUrl('http://revision3.com/networks')
 	cards = common.parseDOM(html, "ul", attrs = { "class": "Cards show-grid" })
@@ -137,7 +138,8 @@ def build_networks_directory():
 	xbmcplugin.addSortMethod( handle = int(sys.argv[ 1 ]), sortMethod = xbmcplugin.SORT_METHOD_UNSORTED )
 	setViewMode("515")
 	xbmcplugin.endOfDirectory(int(sys.argv[1]))
-	
+
+@retry((IndexError, TypeError))	
 def build_networks_sub_directory(url, offset):
 	saveurl = url
 	html = getUrl('http://revision3.com' + url + '/episodePage?limit=25&offset=' + str(offset * 25))
@@ -223,6 +225,7 @@ studio = None
 episode = None
 thumb = None
 date = None
+slug = None
 offset = 0
 
 try:
