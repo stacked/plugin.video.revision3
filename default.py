@@ -5,7 +5,7 @@ import simplejson as json
 plugin =  'Revision3'
 __author__ = 'stacked <stacked.xbmc@gmail.com>'
 __url__ = 'http://code.google.com/p/plugin/'
-__date__ = '03-31-2013'
+__date__ = '04-01-2013'
 __version__ = '3.0.13'
 settings = xbmcaddon.Addon(id='plugin.video.revision3')
 buggalo.SUBMIT_URL = 'http://www.xbmc.byethost17.com/submit.php'
@@ -72,6 +72,11 @@ def build_main_directory(url):
 
 @retry((IndexError, TypeError))
 def build_sub_directory(url, name, slug, offset):
+	if slug == None:
+		dialog = xbmcgui.Dialog()
+		ok = dialog.ok( plugin , settings.getLocalizedString( 30029 ) )
+		build_main_directory(BASE + 'getShows' + KEY)
+		return
 	saveurl = url
 	data = json.loads(getUrl(url + '&offset=' + str(offset * 25)))
 	if len(data['episodes']) == 0:
