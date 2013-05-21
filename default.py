@@ -37,24 +37,24 @@ def build_main_directory(url):
 	if settings.getSetting('folder') == 'true' and settings.getSetting( 'downloadPath' ) and url == BASE + 'getShows' + KEY:
 		u = { 'mode': None, 'url': settings.getSetting( 'downloadPath' ) }
 		infoLabels = { "Title": settings.getLocalizedString( 30012 ), "Plot": settings.getLocalizedString( 30022 ) }
-		addListItem('[ ' + settings.getLocalizedString( 30012 ) + ' ]', downloads_thumb, u, True, 1, infoLabels, fanart_bg)
+		addListItem('[ ' + settings.getLocalizedString( 30012 ) + ' ]', downloads_thumb, u, True, 0, infoLabels, fanart_bg)
 	if url == BASE + 'getShows' + KEY:
 		#Featured
 		u = { 'mode': '1', 'name': settings.getLocalizedString( 30023 ), 'url': BASE + 'getEpisodes' + KEY + '&grouping=featured', 'slug': 'None' }
 		infoLabels = { "Title": settings.getLocalizedString( 30023 ), "Plot": settings.getLocalizedString( 30024 ) }
-		addListItem('[ ' + settings.getLocalizedString( 30023 ) + ' ]', featured_thumb, u, True, 1, infoLabels, fanart_bg)
+		addListItem('[ ' + settings.getLocalizedString( 30023 ) + ' ]', featured_thumb, u, True, 0, infoLabels, fanart_bg)
 		#Most Recent
 		u = { 'mode': '1', 'name': settings.getLocalizedString( 30013 ), 'url': BASE + 'getEpisodes' + KEY + '&grouping=latest', 'slug': 'None' }
 		infoLabels = { "Title": settings.getLocalizedString( 30013 ), "Plot": settings.getLocalizedString( 30018 ) }
-		addListItem('[ ' + settings.getLocalizedString( 30013 ) + ' ]', recent_thumb, u, True, 1, infoLabels, fanart_bg)
+		addListItem('[ ' + settings.getLocalizedString( 30013 ) + ' ]', recent_thumb, u, True, 0, infoLabels, fanart_bg)
 		#Networks
 		u = { 'mode': '4' }
 		infoLabels = { "Title": settings.getLocalizedString( 30027 ), "Plot": settings.getLocalizedString( 30028 ) }
-		addListItem('[ ' + settings.getLocalizedString( 30027 ) + ' ]', networks_thumb, u, True, 1, infoLabels, fanart_bg)
+		addListItem('[ ' + settings.getLocalizedString( 30027 ) + ' ]', networks_thumb, u, True, 0, infoLabels, fanart_bg)
 		#Archived Shows
 		u = { 'mode': '3', 'url': BASE + 'getShows' + KEY + '&grouping=archived' }
 		infoLabels = { "Title": settings.getLocalizedString( 30014 ), "Plot": settings.getLocalizedString( 30019 ) }
-		addListItem('[ ' + settings.getLocalizedString( 30014 ) + ' ]', archived_thumb, u, True, 1, infoLabels, fanart_bg)
+		addListItem('[ ' + settings.getLocalizedString( 30014 ) + ' ]', archived_thumb, u, True, 0, infoLabels, fanart_bg)
 	daily_data = {}
 	for daily_show in data:
 		if daily_show['parent_id'] != None:
@@ -120,14 +120,14 @@ def build_sub_directory(url, name, slug, offset, daily_info):
 		daily_info = ast.literal_eval(daily_info)
 		u = { 'mode': '1', 'name': daily_info['name'], 'url': daily_info['url'], 'slug': slug, 'daily_info': 'None' }
 		infoLabels = { "Title": daily_info['name'], "Plot": daily_info['plot'] }
-		addListItem('[ ' + daily_info['name'] + ' ]', daily_info['thumb'], u, True, 1, infoLabels, fanart)
+		addListItem('[ ' + daily_info['name'] + ' ]', daily_info['thumb'], u, True, 0, infoLabels, fanart)
 	if settings.getSetting('download') == '' or settings.getSetting('download') == 'false':
 		if settings.getSetting('playall') == 'true':
 			playlist = xbmc.PlayList(xbmc.PLAYLIST_VIDEO)
 			playlist.clear()
 			u = { 'mode': '6' }
 			infoLabels = { "Title": settings.getLocalizedString( 30030 ), "Plot": settings.getLocalizedString( 30031 ) }
-			addListItem('* ' + settings.getLocalizedString( 30030 ) + ' *', play_thumb, u, True, 1, infoLabels, fanart)
+			addListItem('* ' + settings.getLocalizedString( 30030 ) + ' *', play_thumb, u, True, 0, infoLabels, fanart)
 	for episode in data['episodes']:
 		studio = episode['show']['name']
 		thumb = episode['images']['medium']
@@ -143,7 +143,7 @@ def build_sub_directory(url, name, slug, offset, daily_info):
 	if (int(data['total']) - ((offset + 1) * 25)) > 0:
 		u = { 'mode': '1', 'name': studio, 'url': saveurl, 'slug': slug, 'offset': offset + 1, 'daily_info': 'None' }
 		infoLabels = { "Title": settings.getLocalizedString( 30016 ), "Plot": settings.getLocalizedString( 30016 ) }
-		addListItem(settings.getLocalizedString( 30016 ) + ' (' + str( offset + 2 ) + ')', next_thumb, u, True, 1, infoLabels, fanart)
+		addListItem(settings.getLocalizedString( 30016 ) + ' (' + str( offset + 2 ) + ')', next_thumb, u, True, 0, infoLabels, fanart)
 	xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_UNSORTED )
 	xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_EPISODE )
 	xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_STUDIO )
@@ -184,7 +184,7 @@ def build_networks_sub_directory(url, offset):
 			playlist.clear()
 			u = { 'mode': '6' }
 			infoLabels = { "Title": settings.getLocalizedString( 30030 ), "Plot": settings.getLocalizedString( 30031 ) }
-			addListItem('* ' + settings.getLocalizedString( 30030 ) + ' *', play_thumb, u, True, 1, infoLabels, fanart_bg)
+			addListItem('* ' + settings.getLocalizedString( 30030 ) + ' *', play_thumb, u, True, 0, infoLabels, fanart_bg)
 	for item in networkItem:
 		url = common.parseDOM(item, "a", attrs = { "class": "playlistPlay clear" }, ret = "href")[0][1:]
 		thumbnail = common.parseDOM(item, "div", attrs = { "class": "thumbnail" })
@@ -199,7 +199,7 @@ def build_networks_sub_directory(url, offset):
 	if len(networkItem) == 25:
 		u = { 'mode': '5', 'url': saveurl, 'offset': offset + 1 }
 		infoLabels = { "Title": settings.getLocalizedString( 30016 ), "Plot": settings.getLocalizedString( 30016 ) }
-		addListItem(settings.getLocalizedString( 30016 ) + ' (' + str( offset + 2 ) + ')', next_thumb, u, True, 1, infoLabels, fanart_bg)
+		addListItem(settings.getLocalizedString( 30016 ) + ' (' + str( offset + 2 ) + ')', next_thumb, u, True, 0, infoLabels, fanart_bg)
 	xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_UNSORTED )
 	xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_EPISODE )
 	xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_STUDIO )
